@@ -18,7 +18,7 @@ flowchart LR
   end
 
   subgraph ROBOT["Scout Mini Onboard-PC 'scoutmini'<br/>192.168.2.90 (wlo1)"]
-    ROS["ROS 2 lyrical<br/>~/scout_ws (Treiber und Launch)<br/>~/fm_ws (Steuer-Skripte)"]
+    ROS["ROS 2 lyrical<br/>~/scout_ws (Treiber und Launch)<br/>~/fm_ws/src/Flowmatching_Implementation (dieses Repo)"]
   end
 
   LIDAR["RPLIDAR A2M12"]
@@ -72,7 +72,8 @@ x = 0,074 m, y = 0, z = 0,08 m, ohne Rotation.
 | `~/scout_ws/src/scout_driver` | `scout_base`, `scout_msgs`, `scout_description` | `github.com/agilexrobotics/scout_ros2` |
 | `~/scout_ws/src/ugv_sdk` | AgileX-SDK, spricht das CAN-Protokoll | `github.com/agilexrobotics/ugv_sdk` |
 | `~/scout_ws/src/scoutmini_launch` | Launch-File und Konfiguration (`rplidar.yaml`, `scout_base.yaml`, `slam_toolbox.yaml`, `realsense.yaml`) | `git-ce.rwth-aachen.de:ccps/lab/devices/agilex/scoutmini_ws` |
-| `~/fm_ws` | `scout_control.py` (Tastatursteuerung), `pure_pursuit.py` (Pfadfolger, hört auf `/fm_path`) | **kein** Git-Repo |
+| `~/fm_ws/src/Flowmatching_Implementation` | **Dieses Repo** (Klon von GitHub), u. a. `scripts/scout_control.py` und `scripts/pure_pursuit.py` | `github.com/NobbisCode/Flowmatching_Implementation` |
+| `~/fm_ws/*.py` | Ursprüngliche, unversionierte Kopien von `scout_control.py` und `pure_pursuit.py`. Veraltet, maßgeblich ist das Repo. | – |
 | `~/bags` | Aufgezeichnete rosbags | – |
 
 ### Start
@@ -122,7 +123,7 @@ flowchart LR
   CAN[Fahrgestell CAN] <-->|can0| SB[scout_base_node]
   SB -->|/odom, /tf odom→base_link| SLAM
   SLAM -->|/map, /pose, /tf map→odom| Y(( ))
-  CMD[scout_control.py / pure_pursuit.py] -->|/cmd_vel| SB
+  CMD[scripts/scout_control.py / scripts/pure_pursuit.py] -->|/cmd_vel| SB
   FM[Flow Matching, künftig] -.->|/fm_path| CMD
 ```
 
@@ -186,7 +187,17 @@ Tipp: Im WLAN kann Multicast unzuverlässig sein. Hilft das nicht, schränkt
 `export ROS_STATIC_PEERS=192.168.2.90` (auf dem PC) bzw. `=192.168.2.126` (auf dem
 Roboter) die Discovery auf feste Adressen ein.
 
-### 5.3 Direktverbindung über `ScoutMiniAP`
+### 5.3 Git (Code-Austausch über GitHub)
+
+```
+PC  ──git push──▶  GitHub (NobbisCode/Flowmatching_Implementation, öffentlich)  ──git pull──▶  Roboter
+```
+
+Code wird auf dem PC entwickelt, nach GitHub gepusht und auf dem Roboter mit `git pull`
+geholt. Der Roboter liest anonym über HTTPS. Will man vom Roboter aus pushen, braucht er
+eigene Zugangsdaten, z. B. einen Deploy-Key mit Schreibrecht.
+
+### 5.4 Direktverbindung über `ScoutMiniAP`
 
 Der Roboter spannt zusätzlich ein eigenes WLAN `ScoutMiniAP` auf (Roboter = 192.168.90.1).
 Damit erreicht man ihn auch ohne Labornetz: `ssh ccps@192.168.90.1`.
