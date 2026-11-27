@@ -43,13 +43,58 @@ Hinweise:
 - Die Rausch-Werte je Sektor enthalten an Kanten auch Sprünge zwischen Vorder- und
   Hintergrund. Der Median ist deshalb aussagekräftiger als der Maximalwert.
 - Fürs Training relevant: Im Normalbetrieb (mit SLAM) sieht der Roboter interpolierte
-  Scans mit genau 1450 Strahlen über 0…2π. Siehe `scan_sample/`.
+  Scans mit genau 1450 Strahlen über 0…2π. Siehe `lidar_processed_driving/`.
+
+## `lidar_processed_driving/` – Normalbetrieb, Fahrt per Fernsteuerung (27.11.2026)
+
+**Zweck:** Genau die Scans, die im Betrieb auf `/scan` publiziert werden und auf die
+später das Netz hört, während einer Fahrt.
+
+**Aufnahme:** Vollständiger `scoutlaunch` (Fahrgestell, Lidar, slam_toolbox). Roboter
+per Fernsteuerung gefahren (`control_mode = 3` die ganze Zeit), 121 s, Laborumgebung.
+
+**Treiber-Einstellungen:** wie im Normalbetrieb, `interpolated_rays: true`,
+`computed_ray_count: 1450`, `scan_mode: Standard`.
+
+**Topics:** `/scan` (1081), `/odom` (~50 Hz), `/tf`, `/tf_static`, `/scout_status`,
+`/rc_status`, `/map` (606), `/pose` (87). Die `scout_msgs`-Topics lassen sich nur
+deserialisieren, wenn `scout_msgs` installiert ist (auf dem Roboter ja, auf dem PC nicht).
+
+**Kennwerte:**
+
+| Größe | Wert |
+|---|---|
+| Scanrate | ~8,9 Hz (Periode 0,112 s) |
+| Strahlen pro Scan | **immer 1450** |
+| Winkel | `angle_min` = 0, `angle_increment` = 0,24828° (2π/1450), also 0° … 359,75° |
+| Keine Rückmeldung (`inf`) | 12,2 % insgesamt; je Scan 4,9 % … 20 % (Median 12,5 %) |
+| Gemessene Distanzen | 0,17 m … 6,1 m (1 %-Quantil 0,37 m, Median 1,9 m, 99 %-Quantil 4,7 m); `range_max` 12 m |
+| Nächstes Hindernis je Scan | Median 0,67 m, minimal 0,17 m |
+| Fahrt (Odometrie) | 23,2 m Weg in einem Bereich von ca. 3,6 m × 3,3 m; v = −0,79 … 0,78 m/s, ω = −0,97 … 0,95 rad/s; 59 % der Zeit in Bewegung |
+
+`scans.npz` enthält zu jedem Scan zusätzlich die nächstgelegene Odometrie (`odom_x`,
+`odom_y`, `odom_yaw`, `odom_v`, `odom_w`, zeitlicher Abstand `odom_dt` ≤ 10 ms).
+
+## `lidar_processed_short/` – Normalbetrieb, überwiegend stehend (27.11.2026)
+
+61,5 s, vollständiger `scoutlaunch`, gleiche Einstellungen wie oben. Bei ca. 5–10 s
+wurde der Roboter per Fernsteuerung ~1,65 m rückwärts gefahren, sonst stand er.
+Topics: `/scan` (550, je 1450 Strahlen), `/odom`, `/tf`, `/tf_static`, `/scout_status`.
+`inf`-Anteil 12,6 %, Distanzen 0,19 m … 6,6 m.
 
 ## `scan_sample/` – Normalbetrieb, kurz (27.11.2026)
 
 11,5 s mit vollständigem `scoutlaunch` (interpolierte Scans, 1450 Strahlen, ~9,2 Hz).
-Topics: `/scan`, `/odom`, `/tf`, `/tf_static`. Bewegung des Roboters während der
-Aufnahme nicht geprüft.
+Topics: `/scan`, `/odom`, `/tf`, `/tf_static`. Ob sich der Roboter bewegt hat, wurde nicht geprüft.
+
+## Rohdaten vs. vorverarbeitete Daten
+
+| | Roh (`lidar_raw_static`) | Vorverarbeitet (`lidar_processed_*`) |
+|---|---|---|
+| Strahlen/Scan | 1544–1590, schwankend | 1450, fest |
+| Winkelraster | ≈ 0,23°, Startwinkel schwankt | 0,24828°, Start immer 0 |
+| Entstehung | echte Messpunkte | Strahlen eines festen Rasters mit der Verbindungslinie zweier benachbarter Messpunkte geschnitten |
+| Wofür | Rauschen und Ausfälle des Sensors verstehen | Format, das SLAM und das Netz im Betrieb bekommen |
 
 ## Lesen
 

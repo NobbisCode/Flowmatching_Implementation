@@ -234,4 +234,6 @@ ros2 bag info data/<name>
 | Ordner | Dauer | Topics | Größe |
 |---|---|---|---|
 | `data/lidar_raw_static/` | 61,4 s, Rohdaten (`interpolated_rays: false`), nur Lidar | `/scan` (553), `/cloud` (553), zusätzlich `scans.npz` | 30 MB |
+| `data/lidar_processed_driving/` | 121 s, Normalbetrieb, per Fernsteuerung gefahren (23 m) | `/scan` (1081), `/odom`, `/tf`, `/scout_status`, `/rc_status`, `/map`, `/pose`, zusätzlich `scans.npz` mit Odometrie | 22 MB |
+| `data/lidar_processed_short/` | 61,5 s, Normalbetrieb, überwiegend stehend | `/scan` (550), `/odom`, `/tf`, `/scout_status`, zusätzlich `scans.npz` | 7 MB |
 | `data/scan_sample/` | 11,5 s | `/scan` (106), `/odom` (577), `/tf` (1153), `/tf_static` (2) | 1,2 MB |
