@@ -10,7 +10,8 @@ Wie Roboter, Sensoren, ROS und PC zusammenspielen, steht in [SYSTEM.md](SYSTEM.m
 |---|---|
 | `scripts/scout_control.py` | Roboter per Tastatur oder mit festem Befehl fahren (`/cmd_vel`) |
 | `scripts/pure_pursuit.py` | Pfadfolger: folgt Pfaden auf `/fm_path` oder eingebauten Testpfaden |
-| `data/` | Aufgezeichnete rosbags (MCAP) |
+| `scripts/bag_to_npz.py` | LaserScans aus einer rosbag als NumPy-Datei (`.npz`) exportieren |
+| `data/` | Aufgezeichnete rosbags (MCAP), beschrieben in `data/README.md` |
 
 ## Wo das Repo liegt
 

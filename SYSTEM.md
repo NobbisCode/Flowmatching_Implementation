@@ -233,4 +233,5 @@ ros2 bag info data/<name>
 
 | Ordner | Dauer | Topics | Größe |
 |---|---|---|---|
+| `data/lidar_raw_static/` | 61,4 s, Rohdaten (`interpolated_rays: false`), nur Lidar | `/scan` (553), `/cloud` (553), zusätzlich `scans.npz` | 30 MB |
 | `data/scan_sample/` | 11,5 s | `/scan` (106), `/odom` (577), `/tf` (1153), `/tf_static` (2) | 1,2 MB |
